@@ -23,6 +23,7 @@ type Dispatcher struct {
 	IPNetworkPrimarySet         *common.IPSet
 	IPNetworkAlternativeSet     *common.IPSet
 	RejectIPNetworkSet          *common.IPSet
+	RejectIPNetworkQType        []uint16
 	RejectQType                 []uint16
 	DomainPrimaryList           matcher.Matcher
 	DomainAlternativeList       matcher.Matcher
@@ -83,10 +84,10 @@ func (d *Dispatcher) Exchange(query *dns.Msg, inboundIP string) *dns.Msg {
 
 	ActiveClientBundle = d.selectByIPNetwork(PrimaryClientBundle, AlternativeClientBundle)
 
-	// Only try to Cache result before return
-	ActiveClientBundle.CacheResultIfNeeded()
 	var respMsg = ActiveClientBundle.GetResponseMessage()
 	d.FilterByRejectIpNetworkSet(respMsg)
+	// Only try to Cache result before return
+	ActiveClientBundle.CacheResultIfNeeded()
 	return respMsg
 }
 
@@ -112,9 +113,13 @@ func (d *Dispatcher) FilterByRejectIpNetworkSet(resp *dns.Msg) {
 			answer = append(answer, a)
 			continue
 		}
-		if contains(d.RejectQType, a.Header().Rrtype) && d.RejectIPNetworkSet.Contains(ip, true, "reject") {
-			log.Debug("anwser rejected")
-			continue
+		log.Debugf("filter rejectQType %s, Rrtype %s", d.RejectIPNetworkQType, a.Header().Rrtype)
+		if contains(d.RejectIPNetworkQType, a.Header().Rrtype) {
+			log.Debug("hit rejectQType")
+			if d.RejectIPNetworkSet.Contains(ip, true, "reject") {
+				log.Debug("anwser rejected")
+				continue
+			}
 		}
 		answer = append(answer, a)
 	}

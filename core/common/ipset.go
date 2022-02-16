@@ -50,6 +50,8 @@ func (ipSet *IPSet) Contains(ip net.IP, isLog bool, name string) bool {
 		}
 		if result && isLog {
 			log.Debugf("Matched: IP network %s %s", name, ip.String())
+		} else if isLog {
+			log.Debugf("Not Matched: IP network %s %s", name, ip.String())
 		}
 	} else {
 		log.Debug("IP network list is nil, not checking")

@@ -37,6 +37,7 @@ func Start() {
 		IPNetworkPrimarySet:         conf.IPNetworkPrimarySet,
 		IPNetworkAlternativeSet:     conf.IPNetworkAlternativeSet,
 		RejectIPNetworkSet:          conf.RejectIPNetworkSet,
+		RejectIPNetworkQType:        conf.RejectQTypeWithIPNetwork.RejectQType,
 		RejectQType:                 conf.RejectQType,
 		DomainPrimaryList:           conf.DomainPrimaryList,
 		DomainAlternativeList:       conf.DomainAlternativeList,
