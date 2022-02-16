@@ -45,8 +45,11 @@ type Config struct {
 		Primary     string `yaml:"primary"`
 		Alternative string `yaml:"alternative"`
 	} `yaml:"ipNetworkFile"`
-	RejectIPNetworkFile string `yaml:"ipNetworkFile"`
-	DomainFile          struct {
+	RejectQTypeWithIPNetwork struct {
+		RejectQType   []uint16 `yaml:"rejectQType"`
+		IPNetworkFile string   `yaml:"ipNetworkFile"`
+	}
+	DomainFile struct {
 		Primary            string `yaml:"primary"`
 		Alternative        string `yaml:"alternative"`
 		PrimaryMatcher     string `yaml:"primaryMatcher"`
@@ -86,7 +89,7 @@ func NewConfig(configFile string) *Config {
 
 	config.IPNetworkPrimarySet = getIPNetworkSet(config.IPNetworkFile.Primary)
 	config.IPNetworkAlternativeSet = getIPNetworkSet(config.IPNetworkFile.Alternative)
-	config.RejectIPNetworkSet = getIPNetworkSet(config.RejectIPNetworkFile)
+	config.RejectIPNetworkSet = getIPNetworkSet(config.RejectQTypeWithIPNetwork.IPNetworkFile)
 
 	if config.MinimumTTL > 0 {
 		log.Infof("Minimum TTL has been set to %d", config.MinimumTTL)

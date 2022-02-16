@@ -23,6 +23,7 @@ type Dispatcher struct {
 	IPNetworkPrimarySet         *common.IPSet
 	IPNetworkAlternativeSet     *common.IPSet
 	RejectIPNetworkSet          *common.IPSet
+	RejectQType                 []uint16
 	DomainPrimaryList           matcher.Matcher
 	DomainAlternativeList       matcher.Matcher
 	RedirectIPv6Record          bool
@@ -89,10 +90,19 @@ func (d *Dispatcher) Exchange(query *dns.Msg, inboundIP string) *dns.Msg {
 	return respMsg
 }
 
+func contains(s []uint16, e uint16) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
+}
+
 func (d *Dispatcher) FilterByRejectIpNetworkSet(resp *dns.Msg) {
 	var answer []dns.RR
 	for _, a := range resp.Answer {
-		log.Debug("Try to match response ip address with IP network")
+		log.Debug("Try to match response ip address with Reject IP network")
 		var ip net.IP
 		if a.Header().Rrtype == dns.TypeA {
 			ip = net.ParseIP(a.(*dns.A).A.String())
@@ -102,7 +112,7 @@ func (d *Dispatcher) FilterByRejectIpNetworkSet(resp *dns.Msg) {
 			answer = append(answer, a)
 			continue
 		}
-		if d.RejectIPNetworkSet.Contains(ip, true, "reject") {
+		if contains(d.RejectQType, a.Header().Rrtype) && d.RejectIPNetworkSet.Contains(ip, true, "reject") {
 			log.Debug("anwser rejected")
 			continue
 		}
