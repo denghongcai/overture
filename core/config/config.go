@@ -48,7 +48,7 @@ type Config struct {
 	RejectQTypeWithIPNetwork struct {
 		RejectQType   []uint16 `yaml:"rejectQType"`
 		IPNetworkFile string   `yaml:"ipNetworkFile"`
-	}
+	} `yaml:"rejectQTypeWithIPNetwork"`
 	DomainFile struct {
 		Primary            string `yaml:"primary"`
 		Alternative        string `yaml:"alternative"`
