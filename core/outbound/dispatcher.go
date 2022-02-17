@@ -102,7 +102,7 @@ func contains(s []uint16, e uint16) bool {
 
 func (d *Dispatcher) FilterByRejectIpNetworkSet(resp *dns.Msg) {
 	var answer []dns.RR
-	if resp.Answer == nil {
+	if resp == nil {
 		return
 	}
 	for _, a := range resp.Answer {
