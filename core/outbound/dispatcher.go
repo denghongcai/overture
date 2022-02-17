@@ -102,6 +102,9 @@ func contains(s []uint16, e uint16) bool {
 
 func (d *Dispatcher) FilterByRejectIpNetworkSet(resp *dns.Msg) {
 	var answer []dns.RR
+	if resp.Answer == nil {
+		return
+	}
 	for _, a := range resp.Answer {
 		log.Debug("Try to match response ip address with Reject IP network")
 		var ip net.IP
